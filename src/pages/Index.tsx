@@ -1,9 +1,28 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import Icon from '@/components/ui/icon';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 const Index = () => {
+  const [email, setEmail] = useState('');
+  const [comment, setComment] = useState('');
+  const [showThanks, setShowThanks] = useState(false);
+
+  const handleWaitlist = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      toast.error('Укажите email или Telegram');
+      return;
+    }
+    setShowThanks(true);
+    toast.success('Спасибо! Мы напишем вам, когда откроем доступ');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
@@ -11,16 +30,13 @@ const Index = () => {
           <div className="flex items-center gap-2">
             <Icon name="TrendingUp" size={28} />
             <span className="text-xl font-bold">MIRRO</span>
+            <span className="ml-2 px-2 py-0.5 text-xs bg-muted text-muted-foreground rounded-md">
+              Preview
+            </span>
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/analyzer" className="text-sm font-medium hover:text-primary transition-colors">
-              Анализатор
-            </Link>
-            <Link to="/research" className="text-sm font-medium hover:text-primary transition-colors">
-              Исследования
-            </Link>
-            <Link to="/blog" className="text-sm font-medium hover:text-primary transition-colors">
-              Блог
+              Попробовать демо
             </Link>
           </nav>
         </div>
@@ -28,122 +44,65 @@ const Index = () => {
 
       <section className="container mx-auto px-4 py-20 lg:py-32">
         <div className="max-w-4xl mx-auto text-center animate-fade-in">
-          <div className="inline-block px-4 py-2 bg-primary/10 rounded-full text-sm font-semibold text-primary mb-6">
-            🔬 Основано на анализе 10 000+ карточек маркетплейсов
-          </div>
           <h1 className="text-5xl lg:text-7xl font-bold tracking-tight mb-6">
-            AI-анализ карточек<br />для роста продаж
+            AI-анализ карточек<br />маркетплейсов
           </h1>
           <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Находим ошибки, которые теряют вам <strong className="text-foreground">от 30% до 70% продаж</strong>.<br />
-            Получите конкретный план действий за 10 секунд.
+            Находим ошибки в карточках товаров и даём конкретный план действий.<br />
+            Без общих советов — только то, что реально влияет на продажи.
           </p>
           
           <Link to="/analyzer">
             <Button size="lg" className="h-16 px-12 text-lg font-semibold">
-              Проверить карточку бесплатно
+              Посмотреть демо
               <Icon name="ArrowRight" size={24} className="ml-2" />
             </Button>
           </Link>
 
           <p className="text-sm text-muted-foreground mt-6">
-            ⚡ Уже проверили <strong>2 847 карточек</strong> · Средний прирост конверсии +42%
+            Сервис в разработке. Доступ открываем постепенно.
           </p>
-        </div>
-      </section>
-
-      <section className="container mx-auto px-4 py-16 bg-primary/5">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-              Реальные результаты продавцов
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              После исправления ошибок по рекомендациям MIRRO
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="p-6 border-2 border-primary/20">
-              <div className="text-center">
-                <div className="text-5xl font-bold text-primary mb-2">+156%</div>
-                <div className="text-sm font-semibold mb-3">к показам в поиске</div>
-                <p className="text-sm text-muted-foreground">
-                  Заполнили все характеристики и оптимизировали заголовок
-                </p>
-                <div className="mt-4 pt-4 border-t text-xs text-muted-foreground">
-                  Товары для дома · Wildberries
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 border-2 border-primary/20">
-              <div className="text-center">
-                <div className="text-5xl font-bold text-primary mb-2">+63%</div>
-                <div className="text-sm font-semibold mb-3">конверсии в покупку</div>
-                <p className="text-sm text-muted-foreground">
-                  Добавили инфографику и убрали 3 стоп-фактора
-                </p>
-                <div className="mt-4 pt-4 border-t text-xs text-muted-foreground">
-                  Электроника · Ozon
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 border-2 border-primary/20">
-              <div className="text-center">
-                <div className="text-5xl font-bold text-primary mb-2">+89%</div>
-                <div className="text-sm font-semibold mb-3">к кликам по карточке</div>
-                <p className="text-sm text-muted-foreground">
-                  Обновили главное фото и добавили схему применения
-                </p>
-                <div className="mt-4 pt-4 border-t text-xs text-muted-foreground">
-                  Красота и здоровье · Яндекс.Маркет
-                </div>
-              </div>
-            </Card>
-          </div>
         </div>
       </section>
 
       <section className="container mx-auto px-4 py-16">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl lg:text-4xl font-bold text-center mb-12">
-            Что проверяет MIRRO
+            Что проверяет сервис
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="p-6 hover:shadow-lg transition-shadow">
               <div className="text-5xl mb-4">📊</div>
-              <h3 className="text-xl font-bold mb-3">SEO и ранжирование</h3>
+              <h3 className="text-xl font-bold mb-3">SEO карточки</h3>
               <p className="text-muted-foreground mb-4">
-                Заголовок, ключевые слова, 15 обязательных характеристик
+                Заголовок, ключевые слова, заполненность характеристик
               </p>
-              <div className="text-sm text-primary font-medium">
-                → Влияет на позиции в поиске до 70%
-              </div>
+              <p className="text-sm text-muted-foreground">
+                → Влияет на позиции в поиске маркетплейса
+              </p>
             </Card>
 
             <Card className="p-6 hover:shadow-lg transition-shadow">
               <div className="text-5xl mb-4">🎨</div>
-              <h3 className="text-xl font-bold mb-3">Визуал и кликабельность</h3>
+              <h3 className="text-xl font-bold mb-3">Визуал</h3>
               <p className="text-muted-foreground mb-4">
-                Качество фото, инфографика, соответствие требованиям
+                Качество фото, наличие инфографики, структура изображений
               </p>
-              <div className="text-sm text-primary font-medium">
-                → Карточки с инфографикой: +60% кликов
-              </div>
+              <p className="text-sm text-muted-foreground">
+                → Влияет на клики и первое впечатление
+              </p>
             </Card>
 
             <Card className="p-6 hover:shadow-lg transition-shadow">
               <div className="text-5xl mb-4">💰</div>
-              <h3 className="text-xl font-bold mb-3">Стоп-факторы конверсии</h3>
+              <h3 className="text-xl font-bold mb-3">Конверсия</h3>
               <p className="text-muted-foreground mb-4">
-                Цена, описание, отзывы — то, что блокирует покупку
+                Описание, цена, стоп-факторы, которые блокируют покупку
               </p>
-              <div className="text-sm text-primary font-medium">
-                → 1 стоп-фактор = -30% к конверсии
-              </div>
+              <p className="text-sm text-muted-foreground">
+                → Влияет на решение о покупке
+              </p>
             </Card>
           </div>
         </div>
@@ -154,11 +113,8 @@ const Index = () => {
           <h2 className="text-3xl lg:text-4xl font-bold mb-6">
             Как это работает
           </h2>
-          <p className="text-lg text-muted-foreground mb-12">
-            Простой процесс — конкретный результат
-          </p>
           
-          <div className="space-y-8 text-left">
+          <div className="space-y-8 text-left mt-12">
             <div className="flex gap-4">
               <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl">
                 1
@@ -166,7 +122,7 @@ const Index = () => {
               <div>
                 <h3 className="text-xl font-bold mb-2">Вставьте ссылку на карточку</h3>
                 <p className="text-muted-foreground">
-                  Скопируйте URL с WB, Ozon или Яндекс.Маркет — поддерживаем все площадки
+                  WB, Ozon или Яндекс.Маркет
                 </p>
               </div>
             </div>
@@ -176,9 +132,9 @@ const Index = () => {
                 2
               </div>
               <div>
-                <h3 className="text-xl font-bold mb-2">AI проверит 6 критичных параметров</h3>
+                <h3 className="text-xl font-bold mb-2">AI проверяет карточку</h3>
                 <p className="text-muted-foreground">
-                  Заголовок, характеристики, визуал, описание, цена, стоп-факторы — всё за 10 секунд
+                  Заголовок, характеристики, фото, описание, стоп-факторы
                 </p>
               </div>
             </div>
@@ -188,153 +144,153 @@ const Index = () => {
                 3
               </div>
               <div>
-                <h3 className="text-xl font-bold mb-2">Получите план с приоритетами</h3>
+                <h3 className="text-xl font-bold mb-2">Получаете план действий</h3>
                 <p className="text-muted-foreground">
-                  Что исправить, почему это важно, какой эффект ожидать — конкретные действия, а не общие советы
+                  Конкретные рекомендации: что исправить и почему это важно
                 </p>
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <Link to="/analyzer">
-            <Button size="lg" className="mt-12">
-              Начать анализ бесплатно
-              <Icon name="Sparkles" size={20} className="ml-2" />
-            </Button>
-          </Link>
+      <section className="container mx-auto px-4 py-16">
+        <div className="max-w-3xl mx-auto">
+          <Card className="p-8 lg:p-12 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+            {!showThanks ? (
+              <>
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold mb-4">
+                    Получить ранний доступ
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Сервис находится в разработке. Мы открываем доступ постепенно.<br />
+                    Запишитесь в лист ожидания — напишем, когда будет готово.
+                  </p>
+                </div>
+
+                <form onSubmit={handleWaitlist} className="space-y-4 max-w-md mx-auto">
+                  <div>
+                    <Label htmlFor="email" className="text-base">
+                      Email или Telegram *
+                    </Label>
+                    <Input
+                      id="email"
+                      type="text"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="your@email.com или @username"
+                      className="mt-2 h-12"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="comment" className="text-base">
+                      Комментарий (необязательно)
+                    </Label>
+                    <Textarea
+                      id="comment"
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      placeholder="Что думаете о сервисе? Что было бы полезно?"
+                      className="mt-2 min-h-[80px]"
+                    />
+                  </div>
+
+                  <Button type="submit" size="lg" className="w-full h-14 text-base">
+                    Записаться в лист ожидания
+                    <Icon name="Send" size={20} className="ml-2" />
+                  </Button>
+
+                  <p className="text-xs text-center text-muted-foreground">
+                    Без спама. Напишем только когда откроем доступ.
+                  </p>
+                </form>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                  <Icon name="CheckCircle2" size={32} className="text-primary" />
+                </div>
+                <h3 className="text-2xl font-bold mb-3">Спасибо!</h3>
+                <p className="text-muted-foreground mb-6">
+                  Мы добавили вас в лист ожидания.<br />
+                  Напишем, когда откроем доступ. Без спама.
+                </p>
+                <Link to="/analyzer">
+                  <Button variant="outline">
+                    Посмотреть демо-версию
+                    <Icon name="ArrowRight" size={18} className="ml-2" />
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </Card>
         </div>
       </section>
 
       <section className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl lg:text-4xl font-bold text-center mb-12">
-            Вопросы и ответы
+            Вопросы
           </h2>
 
           <div className="space-y-4">
-            <Card className="p-6 border-l-4 border-l-primary">
-              <h3 className="text-lg font-bold mb-3">Почему MIRRO находит больше ошибок, чем я сам?</h3>
-              <p className="text-muted-foreground mb-3">
-                AI анализирует карточку по 47 параметрам за 10 секунд. Вручную это займёт 2-3 часа и вы всё равно пропустите критичные детали.
-              </p>
-              <p className="text-sm text-primary font-medium">
-                ✓ Основано на исследовании 10 000+ успешных карточек топ-продавцов
+            <Card className="p-6">
+              <h3 className="text-lg font-bold mb-3">Почему доступ ограничен?</h3>
+              <p className="text-muted-foreground">
+                Сервис находится в стадии разработки. Мы тестируем алгоритмы и собираем обратную связь от первых пользователей, чтобы сделать продукт действительно полезным.
               </p>
             </Card>
 
-            <Card className="p-6 border-l-4 border-l-primary">
-              <h3 className="text-lg font-bold mb-3">Реально ли увеличить продажи, просто исправив карточку?</h3>
-              <p className="text-muted-foreground mb-3">
-                Да. В 80% случаев продавцы теряют от 30% до 70% продаж из-за ошибок в карточке: плохие позиции в поиске, низкая кликабельность, стоп-факторы.
-              </p>
-              <p className="text-sm text-primary font-medium">
-                ✓ Средний прирост конверсии у наших пользователей: +42% за первый месяц
-              </p>
-            </Card>
-
-            <Card className="p-6 border-l-4 border-l-primary">
-              <h3 className="text-lg font-bold mb-3">Что если у меня уже хорошая карточка?</h3>
-              <p className="text-muted-foreground mb-3">
-                Даже опытные продавцы находят 3-5 точек роста после анализа. Алгоритмы маркетплейсов меняются каждый месяц — то, что работало в прошлом году, сегодня уже не даёт результата.
-              </p>
-              <p className="text-sm text-primary font-medium">
-                ✓ Проверка бесплатная — ничего не теряете, но можете найти скрытые проблемы
-              </p>
-            </Card>
-
-            <Card className="p-6 border-l-4 border-l-primary">
+            <Card className="p-6">
               <h3 className="text-lg font-bold mb-3">Какие маркетплейсы поддерживаются?</h3>
-              <p className="text-muted-foreground mb-3">
-                Wildberries, Ozon и Яндекс.Маркет — анализируем карточки на всех популярных площадках. Алгоритм учитывает специфику каждого маркетплейса.
+              <p className="text-muted-foreground">
+                Wildberries, Ozon и Яндекс.Маркет. Алгоритм учитывает специфику каждой площадки.
               </p>
             </Card>
 
-            <Card className="p-6 border-l-4 border-l-primary">
-              <h3 className="text-lg font-bold mb-3">Сколько стоит полный анализ?</h3>
-              <p className="text-muted-foreground mb-3">
-                Превью анализа с основными рекомендациями — бесплатно навсегда. Полный отчёт с детальным планом и приоритетами — для участников листа ожидания.
-              </p>
-              <p className="text-sm text-primary font-medium">
-                ✓ Присоединяйтесь к листу ожидания — первые 100 человек получат пожизненный доступ
+            <Card className="p-6">
+              <h3 className="text-lg font-bold mb-3">Это бесплатно?</h3>
+              <p className="text-muted-foreground">
+                Сейчас сервис в разработке, мы определяемся с моделью. Ранние пользователи получат доступ на выгодных условиях.
               </p>
             </Card>
 
-            <Card className="p-6 border-l-4 border-l-primary">
-              <h3 className="text-lg font-bold mb-3">За какое время я увижу результат?</h3>
+            <Card className="p-6">
+              <h3 className="text-lg font-bold mb-3">Можно посмотреть, как это работает?</h3>
               <p className="text-muted-foreground mb-3">
-                Быстрые правки (заголовок, характеристики) дают эффект через 3-7 дней. Полная оптимизация — через 2-4 недели. MIRRO показывает приоритеты, чтобы вы начали с самого важного.
+                Да, доступна демо-версия. Она показывает концепцию сервиса и логику работы анализа.
               </p>
-              <p className="text-sm text-primary font-medium">
-                ✓ Начните с TOP-3 рекомендаций — получите первые +15% к конверсии за неделю
-              </p>
+              <Link to="/analyzer">
+                <Button variant="outline" size="sm">
+                  Открыть демо
+                  <Icon name="ExternalLink" size={16} className="ml-2" />
+                </Button>
+              </Link>
             </Card>
           </div>
-        </div>
-      </section>
-
-      <section className="container mx-auto px-4 py-16 bg-gradient-to-br from-primary/10 to-primary/5">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-            Готовы увеличить продажи?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            Проверьте карточку за 10 секунд и получите конкретный план действий
-          </p>
-          <Link to="/analyzer">
-            <Button size="lg" className="h-16 px-12 text-lg font-semibold">
-              Начать бесплатный анализ
-              <Icon name="Rocket" size={24} className="ml-2" />
-            </Button>
-          </Link>
-          <p className="text-sm text-muted-foreground mt-6">
-            ⚡ 10 секунд анализа · Конкретные рекомендации · Без регистрации
-          </p>
         </div>
       </section>
 
       <footer className="border-t border-border mt-20">
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <Icon name="TrendingUp" size={24} />
-                  <span className="font-bold text-lg">MIRRO</span>
-                </div>
-                <p className="text-sm text-muted-foreground mb-3">
-                  AI-анализ карточек для роста продаж на маркетплейсах
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Основано на анализе 10 000+ карточек топ-продавцов
-                </p>
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Icon name="TrendingUp" size={24} />
+                <span className="font-bold text-lg">MIRRO</span>
+                <span className="px-2 py-0.5 text-xs bg-muted text-muted-foreground rounded-md">
+                  Preview
+                </span>
               </div>
-
-              <div>
-                <h4 className="font-bold mb-4">Продукт</h4>
-                <div className="space-y-2 text-sm">
-                  <Link to="/analyzer" className="block text-muted-foreground hover:text-primary transition-colors">
-                    Анализатор карточек
-                  </Link>
-                  <Link to="/research" className="block text-muted-foreground hover:text-primary transition-colors">
-                    Исследования
-                  </Link>
-                  <Link to="/blog" className="block text-muted-foreground hover:text-primary transition-colors">
-                    Блог
-                  </Link>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="font-bold mb-4">Контакты</h4>
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <p>support@mirro.ai</p>
-                  <p>Telegram: @mirro_support</p>
-                </div>
-              </div>
+              <p className="text-sm text-muted-foreground">
+                AI-анализ карточек маркетплейсов
+              </p>
             </div>
 
-            <div className="pt-8 border-t text-center text-sm text-muted-foreground">
-              © 2024 MIRRO. Все права защищены.
+            <div className="pt-8 mt-8 border-t text-center text-sm text-muted-foreground">
+              © 2024 MIRRO. Сервис в разработке.
             </div>
           </div>
         </div>
