@@ -1,0 +1,48 @@
+{
+  "tests": [
+    {
+      "name": "Успешное добавление контакта",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "email_or_telegram": "test@example.com",
+        "comment": "Хочу получить доступ",
+        "source": "landing"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "success": true,
+        "message": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Добавление без комментария",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "email_or_telegram": "@username",
+        "source": "analyzer"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Ошибка: пустой email",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "email_or_telegram": "",
+        "comment": "test"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
