@@ -13,14 +13,39 @@ const Index = () => {
   const [comment, setComment] = useState('');
   const [showThanks, setShowThanks] = useState(false);
 
-  const handleWaitlist = (e: React.FormEvent) => {
+  const handleWaitlist = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) {
       toast.error('Укажите email или Telegram');
       return;
     }
-    setShowThanks(true);
-    toast.success('Спасибо! Мы напишем вам, когда откроем доступ');
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/a23fe291-57f2-4556-ba7c-3443ddc2a8d6', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email_or_telegram: email,
+          comment: comment,
+          source: 'landing'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setShowThanks(true);
+        setEmail('');
+        setComment('');
+        toast.success(data.message || 'Спасибо! Мы напишем вам, когда откроем доступ');
+      } else {
+        toast.error(data.error || 'Произошла ошибка. Попробуйте позже');
+      }
+    } catch (error) {
+      toast.error('Ошибка соединения. Попробуйте позже');
+    }
   };
 
   return (
