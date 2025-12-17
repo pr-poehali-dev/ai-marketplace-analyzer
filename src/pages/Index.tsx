@@ -117,7 +117,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Icon name="TrendingUp" size={28} />
-            <span className="text-xl font-bold">CardAnalyzer</span>
+            <span className="text-xl font-bold">MIRRO</span>
           </div>
           <Button variant="outline" size="sm">
             <Icon name="Mail" size={16} className="mr-2" />
@@ -389,7 +389,7 @@ const Index = () => {
                 <span className="text-lg font-bold">CardAnalyzer</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                AI-анализ карточек для роста продаж на маркетплейсах
+                AI-анализ карточек MIRRO для роста продаж на маркетплейсах
               </p>
             </div>
             <div>
@@ -404,7 +404,7 @@ const Index = () => {
             </div>
           </div>
           <div className="max-w-5xl mx-auto mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-            © 2024 CardAnalyzer. Все права защищены.
+            © 2024 MIRRO. Все права защищены.
           </div>
         </div>
       </footer>
