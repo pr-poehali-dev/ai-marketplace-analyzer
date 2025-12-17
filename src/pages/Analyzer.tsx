@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -11,9 +14,16 @@ const Analyzer = () => {
   const [productUrl, setProductUrl] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
-  const [currentStage, setCurrentStage] = useState(0);
+  const [currentStage, setCurrentStage] = useState(-1);
   const [currentThought, setCurrentThought] = useState('');
   const [showResults, setShowResults] = useState(false);
+  const [showLeadForm, setShowLeadForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    productLink: '',
+    agreedToPolicy: false,
+  });
 
   const analysisStages = [
     {
@@ -123,33 +133,49 @@ const Analyzer = () => {
 
     let thoughtIndex = 0;
     let stageIndex = 0;
+    const totalThoughts = analysisStages.reduce((sum, stage) => sum + stage.thoughts.length, 0);
+    let completedThoughts = 0;
 
     const thoughtInterval = setInterval(() => {
       const stage = analysisStages[stageIndex];
       if (stage && thoughtIndex < stage.thoughts.length) {
         setCurrentThought(stage.thoughts[thoughtIndex]);
+        setCurrentStage(stageIndex);
         thoughtIndex++;
+        completedThoughts++;
+        
+        const progress = (completedThoughts / totalThoughts) * 100;
+        setAnalysisProgress(progress);
       } else {
         if (stageIndex < analysisStages.length - 1) {
           stageIndex++;
           thoughtIndex = 0;
-          setCurrentStage(stageIndex);
-        }
-      }
-    }, 800);
-
-    const progressInterval = setInterval(() => {
-      setAnalysisProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
+        } else {
           clearInterval(thoughtInterval);
           setIsAnalyzing(false);
           setShowResults(true);
-          return 100;
+          setAnalysisProgress(100);
+          setCurrentStage(analysisStages.length - 1);
         }
-        return prev + 1.5;
-      });
-    }, 100);
+      }
+    }, 900);
+  };
+
+  const handleGetFullReport = () => {
+    setFormData({ ...formData, productLink: productUrl });
+    setShowLeadForm(true);
+  };
+
+  const handleSubmitLead = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.agreedToPolicy) {
+      toast.error('Заполните все обязательные поля и примите условия');
+      return;
+    }
+
+    toast.success('Спасибо! Отчёт отправлен на вашу почту');
+    setShowLeadForm(false);
   };
 
   return (
@@ -230,7 +256,9 @@ const Analyzer = () => {
                   <div
                     key={index}
                     className={`border-l-4 pl-6 py-4 transition-all duration-500 ${
-                      index <= currentStage
+                      index < currentStage
+                        ? 'border-primary opacity-100'
+                        : index === currentStage
                         ? 'border-primary opacity-100'
                         : 'border-muted opacity-40'
                     }`}
@@ -238,14 +266,16 @@ const Analyzer = () => {
                     <div className="flex items-start gap-3">
                       {index < currentStage ? (
                         <Icon name="CheckCircle2" size={24} className="text-primary flex-shrink-0 mt-1" />
-                      ) : index === currentStage ? (
+                      ) : index === currentStage && isAnalyzing ? (
                         <Icon name="Loader2" size={24} className="text-primary flex-shrink-0 mt-1 animate-spin" />
+                      ) : index === currentStage && !isAnalyzing ? (
+                        <Icon name="CheckCircle2" size={24} className="text-primary flex-shrink-0 mt-1" />
                       ) : (
                         <Icon name="Circle" size={24} className="text-muted-foreground flex-shrink-0 mt-1" />
                       )}
                       <div className="flex-1">
                         <h4 className="text-lg font-semibold mb-2">{stage.title}</h4>
-                        {index < currentStage && (
+                        {index <= currentStage && !isAnalyzing && (
                           <div className="space-y-3 animate-fade-in">
                             <div className="p-3 bg-muted/30 rounded-lg">
                               <p className="text-sm text-foreground mb-1">
@@ -286,8 +316,8 @@ const Analyzer = () => {
                     </p>
                   </div>
 
-                  <Card className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-                    <h5 className="text-lg font-bold mb-4">📋 План действий на эту неделю:</h5>
+                  <Card className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 mb-6">
+                    <h5 className="text-lg font-bold mb-4">📋 План действий на эту неделю (превью):</h5>
                     <div className="space-y-3">
                       <div className="flex items-start gap-3">
                         <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
@@ -317,17 +347,21 @@ const Analyzer = () => {
                         </div>
                       </div>
                     </div>
+                    <div className="mt-4 p-4 bg-background/50 rounded-lg text-center">
+                      <p className="text-sm text-muted-foreground mb-2">
+                        + ещё 8 конкретных действий в полном отчёте
+                      </p>
+                    </div>
                   </Card>
 
-                  <div className="mt-6 text-center">
-                    <Button size="lg" className="mr-3">
-                      Скачать полный отчёт (PDF)
+                  <div className="text-center">
+                    <Button size="lg" onClick={handleGetFullReport} className="mb-3">
+                      Получить полный отчёт (PDF)
                       <Icon name="Download" size={20} className="ml-2" />
                     </Button>
-                    <Button size="lg" variant="outline">
-                      Проверить другую карточку
-                      <Icon name="RotateCw" size={20} className="ml-2" />
-                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      Детальный план с примерами, чек-листом и ДО/ПОСЛЕ
+                    </p>
                   </div>
                 </div>
               )}
@@ -335,48 +369,188 @@ const Analyzer = () => {
           )}
 
           {!isAnalyzing && analysisProgress === 0 && (
-            <div className="mt-12">
-              <Card className="p-8 text-center">
-                <Icon name="Sparkles" size={48} className="mx-auto mb-4 text-primary" />
-                <h3 className="text-xl font-bold mb-3">Что проверит MIRRO AI?</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-6">
-                  <div className="flex gap-3">
-                    <Icon name="CheckCircle2" size={20} className="text-primary flex-shrink-0 mt-1" />
-                    <div>
-                      <p className="font-medium">SEO и ранжирование</p>
-                      <p className="text-sm text-muted-foreground">Заголовок, ключевые слова, характеристики</p>
+            <>
+              <div className="mb-16">
+                <Card className="p-8 text-center">
+                  <Icon name="Sparkles" size={48} className="mx-auto mb-4 text-primary" />
+                  <h3 className="text-xl font-bold mb-3">Что проверит MIRRO AI?</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-6">
+                    <div className="flex gap-3">
+                      <Icon name="CheckCircle2" size={20} className="text-primary flex-shrink-0 mt-1" />
+                      <div>
+                        <p className="font-medium">SEO и ранжирование</p>
+                        <p className="text-sm text-muted-foreground">Заголовок, ключевые слова, характеристики</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <Icon name="CheckCircle2" size={20} className="text-primary flex-shrink-0 mt-1" />
+                      <div>
+                        <p className="font-medium">Визуал и фотографии</p>
+                        <p className="text-sm text-muted-foreground">Качество, инфографика, требования площадок</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <Icon name="CheckCircle2" size={20} className="text-primary flex-shrink-0 mt-1" />
+                      <div>
+                        <p className="font-medium">Описание товара</p>
+                        <p className="text-sm text-muted-foreground">Структура, полнота, читаемость</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <Icon name="CheckCircle2" size={20} className="text-primary flex-shrink-0 mt-1" />
+                      <div>
+                        <p className="font-medium">Стоп-факторы</p>
+                        <p className="text-sm text-muted-foreground">Цена, отзывы, что блокирует покупку</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex gap-3">
-                    <Icon name="CheckCircle2" size={20} className="text-primary flex-shrink-0 mt-1" />
-                    <div>
-                      <p className="font-medium">Визуал и фотографии</p>
-                      <p className="text-sm text-muted-foreground">Качество, инфографика, требования площадок</p>
+                  <p className="text-sm text-muted-foreground mt-6">
+                    🔬 Анализ основан на исследовании 10 000+ успешных карточек маркетплейсов
+                  </p>
+                </Card>
+              </div>
+
+              <div className="mb-16">
+                <h2 className="text-3xl font-bold text-center mb-8">
+                  Примеры ДО и ПОСЛЕ оптимизации
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card className="p-6">
+                    <div className="text-center mb-4">
+                      <span className="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-semibold mb-3">
+                        ❌ ДО оптимизации
+                      </span>
+                      <div className="bg-muted/30 rounded-lg p-4 mb-4">
+                        <div className="text-6xl mb-3">📦</div>
+                        <p className="text-sm font-medium mb-2">
+                          "Чехол для телефона силиконовый прозрачный защитный"
+                        </p>
+                        <div className="text-xs text-muted-foreground space-y-1">
+                          <p>• Характеристик: 8 из 15</p>
+                          <p>• Без инфографики</p>
+                          <p>• 2 отзыва</p>
+                        </div>
+                      </div>
+                      <div className="text-sm">
+                        <p className="font-semibold text-red-600">Конверсия: 1.2%</p>
+                        <p className="text-xs text-muted-foreground">Позиция в поиске: 87</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-3">
-                    <Icon name="CheckCircle2" size={20} className="text-primary flex-shrink-0 mt-1" />
-                    <div>
-                      <p className="font-medium">Описание товара</p>
-                      <p className="text-sm text-muted-foreground">Структура, полнота, читаемость</p>
+                  </Card>
+
+                  <Card className="p-6 border-2 border-primary">
+                    <div className="text-center mb-4">
+                      <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-3">
+                        ✅ ПОСЛЕ оптимизации
+                      </span>
+                      <div className="bg-primary/5 rounded-lg p-4 mb-4">
+                        <div className="text-6xl mb-3">📱</div>
+                        <p className="text-sm font-medium mb-2">
+                          "Чехол iPhone 15 Pro силиконовый защитный — MagSafe, противоударный"
+                        </p>
+                        <div className="text-xs text-muted-foreground space-y-1">
+                          <p>• Характеристик: 15 из 15 ✓</p>
+                          <p>• Инфографика на 4 фото ✓</p>
+                          <p>• 18 отзывов ✓</p>
+                        </div>
+                      </div>
+                      <div className="text-sm">
+                        <p className="font-semibold text-green-600">Конверсия: 3.8% (+217%)</p>
+                        <p className="text-xs text-muted-foreground">Позиция в поиске: 12 ↑</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-3">
-                    <Icon name="CheckCircle2" size={20} className="text-primary flex-shrink-0 mt-1" />
-                    <div>
-                      <p className="font-medium">Стоп-факторы</p>
-                      <p className="text-sm text-muted-foreground">Цена, отзывы, что блокирует покупку</p>
-                    </div>
-                  </div>
+                  </Card>
                 </div>
-                <p className="text-sm text-muted-foreground mt-6">
-                  🔬 Анализ основан на исследовании 10 000+ успешных карточек маркетплейсов
-                </p>
-              </Card>
-            </div>
+
+                <div className="mt-8 text-center">
+                  <Card className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+                    <h4 className="font-bold mb-2">Результат за 3 недели:</h4>
+                    <div className="grid grid-cols-3 gap-4 mt-4">
+                      <div>
+                        <p className="text-3xl font-bold text-primary">+217%</p>
+                        <p className="text-sm text-muted-foreground">конверсии</p>
+                      </div>
+                      <div>
+                        <p className="text-3xl font-bold text-primary">+380%</p>
+                        <p className="text-sm text-muted-foreground">показов</p>
+                      </div>
+                      <div>
+                        <p className="text-3xl font-bold text-primary">↑75</p>
+                        <p className="text-sm text-muted-foreground">позиций</p>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </section>
+
+      <Dialog open={showLeadForm} onOpenChange={setShowLeadForm}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Получить полный отчёт (PDF)</DialogTitle>
+            <DialogDescription>
+              Детальный план действий, примеры, чек-лист. Отчёт придёт на вашу почту в течение 2 минут.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmitLead} className="space-y-4 mt-4">
+            <div>
+              <Label htmlFor="name">Ваше имя *</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Иван"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="email">Email *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="ivan@example.com"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="productLink">Ссылка на карточку</Label>
+              <Input
+                id="productLink"
+                value={formData.productLink}
+                onChange={(e) => setFormData({ ...formData, productLink: e.target.value })}
+                placeholder="https://..."
+                className="mt-1"
+                disabled
+              />
+            </div>
+            <div className="flex items-start gap-2">
+              <Checkbox
+                id="policy"
+                checked={formData.agreedToPolicy}
+                onCheckedChange={(checked) => 
+                  setFormData({ ...formData, agreedToPolicy: checked as boolean })
+                }
+              />
+              <Label htmlFor="policy" className="text-xs leading-relaxed cursor-pointer">
+                Согласен на обработку персональных данных и получение отчёта по email. 
+                Это поможет нам улучшить продукт для вас.
+              </Label>
+            </div>
+            <Button type="submit" className="w-full" size="lg">
+              Получить отчёт
+              <Icon name="Send" size={18} className="ml-2" />
+            </Button>
+            <p className="text-xs text-center text-muted-foreground">
+              Ваши данные нужны только для отправки отчёта и тестирования MVP
+            </p>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <footer className="border-t border-border mt-20">
         <div className="container mx-auto px-4 py-8">
