@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
   const [productUrl, setProductUrl] = useState('');
@@ -119,10 +120,17 @@ const Index = () => {
             <Icon name="TrendingUp" size={28} />
             <span className="text-xl font-bold">MIRRO</span>
           </div>
-          <Button variant="outline" size="sm">
-            <Icon name="Mail" size={16} className="mr-2" />
-            Контакты
-          </Button>
+          <nav className="hidden md:flex items-center gap-6">
+            <Link to="/analyzer" className="text-sm font-medium hover:text-primary transition-colors">
+              Анализатор
+            </Link>
+            <Link to="/research" className="text-sm font-medium hover:text-primary transition-colors">
+              Исследования
+            </Link>
+            <Link to="/blog" className="text-sm font-medium hover:text-primary transition-colors">
+              Блог
+            </Link>
+          </nav>
         </div>
       </header>
 
